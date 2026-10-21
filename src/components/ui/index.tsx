@@ -265,7 +265,8 @@ export function Modal({ open, onClose, title, description, size = "md", footer, 
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <header className={s.modalHead}>
         <div><h2 id={titleId}>{title}</h2>{description && <p>{description}</p>}</div>
-        <button type="button" className={s.close} aria-label="Close" onClick={onClose}><X size={18} /></button>
+        {/* Like Google's dialogs, ones with their own buttons don't need a close ×; Esc and the backdrop still close them. */}
+        {!footer && <button type="button" className={s.close} aria-label="Close" onClick={onClose}><X size={18} /></button>}
       </header>
       <div className={s.modalBody}>{children}</div>
       {footer && <footer className={s.modalFoot}>{footer}</footer>}

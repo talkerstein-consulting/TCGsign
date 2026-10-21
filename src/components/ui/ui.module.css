@@ -132,20 +132,29 @@ select.input { appearance: none; padding-right: 36px; background: var(--surface)
 .alert.info > svg { color: var(--steel); }
 
 /* ---------- modal ---------- */
-.modal { margin: auto; padding: 0; border: 1px solid var(--border); border-radius: var(--r-xl); background: var(--surface); color: var(--text); box-shadow: var(--shadow-modal); width: min(var(--modal-w), calc(100vw - 32px)); max-height: calc(100dvh - 48px); overflow: hidden; }
-.modal[open] { display: flex; flex-direction: column; }
-.modal::backdrop { background: rgb(25 37 74 / .42); }
-.mSm { --modal-w: 440px; } .mMd { --modal-w: 640px; } .mLg { --modal-w: 960px; }
-.modalHead { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--gap-field); padding: var(--pad-card); border-bottom: 1px solid var(--border); }
-.modalHead h2 { font: 700 var(--fs-h3)/var(--lh-head) var(--font-heading); }
-.modalHead p { margin-top: var(--s1); font-size: var(--fs-sm); color: var(--text-muted); }
-.close { flex: none; display: grid; place-items: center; width: 44px; height: 44px; margin: -6px -8px 0 0; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text-muted); transition: background var(--t), color var(--t); }
+/* Dialogs follow Google's: a plain white card with no border, a soft layered shadow over a dimmed page,
+   a regular-weight sans title, body text in one column, and the actions bottom-right. No dividers,
+   no grey footer band. 24px padding throughout. */
+.modal { margin: auto; padding: 0; border: 0; border-radius: 12px; background: var(--surface); color: var(--text); box-shadow: 0 4px 8px 3px rgb(60 64 67 / .15), 0 1px 3px rgb(60 64 67 / .3); width: min(var(--modal-w), calc(100vw - 32px)); max-height: calc(100dvh - 48px); overflow: hidden; }
+.modal[open] { display: flex; flex-direction: column; animation: dialogIn 150ms cubic-bezier(.2, 0, 0, 1); }
+.modal::backdrop { background: rgb(32 33 36 / .5); }
+@keyframes dialogIn { from { opacity: 0; transform: scale(.96); } }
+@media (prefers-reduced-motion: reduce) { .modal[open] { animation: none; } }
+.mSm { --modal-w: 440px; } .mMd { --modal-w: 600px; } .mLg { --modal-w: 960px; }
+.modalHead { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--gap-field); padding: 24px 24px 16px; }
+.modalHead h2 { font: 400 22px/1.3 var(--font-body); color: var(--text); }
+.modalHead p { margin-top: 6px; font-size: var(--fs-md); line-height: 1.5; color: var(--text-muted); }
+.close { flex: none; display: grid; place-items: center; width: 40px; height: 40px; margin: -8px -10px 0 0; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); transition: background var(--t), color var(--t); }
 .close:hover { background: var(--steel-08); color: var(--text); }
-.modalBody { flex: 1; overflow-y: auto; padding: var(--pad-card); }
-.modalFoot { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--gap-tight); padding: var(--gap-field) var(--pad-card); border-top: 1px solid var(--border); background: var(--paper); }
+.modalBody { flex: 1; overflow-y: auto; padding: 0 24px 20px; font-size: var(--fs-md); line-height: 1.55; color: var(--text-muted); }
+.modalFoot { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; padding: 8px 24px 20px; }
+/* Phones: like Google, small and medium dialogs stay centred cards; only large ones go full screen. */
 @media (max-width: 640px) {
-  .modal { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; border: 0; }
-  .modalFoot > * { flex: 1; }
+  .modal { width: calc(100vw - 32px); max-height: calc(100dvh - 32px); }
+  .modal.mLg { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
+  .modalHead { padding: 20px 20px 12px; }
+  .modalBody { padding: 0 20px 16px; }
+  .modalFoot { padding: 8px 20px 16px; }
 }
 
 /* ---------- toast ---------- */

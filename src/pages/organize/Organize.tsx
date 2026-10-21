@@ -134,7 +134,37 @@ export default function Organize() {
     const before = current.current;
     let order = before; // tracked here so the end of the drag doesn't depend on React's render timing
     setDragId(id);
+
+    // A lifted copy of the page follows the pointer; its slot in the grid stays as the drop placeholder.
+    const src = e.currentTarget.closest<HTMLElement>("[data-page-id]");
+    let ghost: HTMLElement | null = null;
+    let grab = { x: 0, y: 0 };
+    if (src) {
+      const r = src.getBoundingClientRect();
+      grab = { x: e.clientX - r.left, y: e.clientY - r.top };
+      ghost = src.cloneNode(true) as HTMLElement;
+      // Canvases don't clone their pixels, so copy the rendered page across.
+      const from = src.querySelectorAll("canvas"), to = ghost.querySelectorAll("canvas");
+      from.forEach((c, i) => { to[i].width = c.width; to[i].height = c.height; to[i].getContext("2d")?.drawImage(c, 0, 0); });
+      ghost.removeAttribute("data-page-id");
+      ghost.setAttribute("aria-hidden", "true");
+      Object.assign(ghost.style, {
+        position: "fixed", left: "0", top: "0", width: `${r.width}px`, height: `${r.height}px`, margin: "0",
+        zIndex: "1000", pointerEvents: "none", opacity: "0.95", boxShadow: "0 18px 40px rgb(25 37 74 / .28)",
+        transform: `translate(${r.left}px, ${r.top}px) rotate(2deg) scale(1.03)`, transition: "none",
+      });
+      document.body.append(ghost);
+    }
+    const follow = (ev: PointerEvent) => {
+      if (ghost) ghost.style.transform = `translate(${ev.clientX - grab.x}px, ${ev.clientY - grab.y}px) rotate(2deg) scale(1.03)`;
+      // Near the top or bottom edge, scroll so a long document can be reordered end to end.
+      const edge = 72;
+      if (ev.clientY < edge) window.scrollBy(0, -Math.ceil((edge - ev.clientY) / 4));
+      else if (ev.clientY > window.innerHeight - edge) window.scrollBy(0, Math.ceil((ev.clientY - (window.innerHeight - edge)) / 4));
+    };
+
     const moveTo = (ev: PointerEvent) => {
+      follow(ev);
       const el = document.elementFromPoint(ev.clientX, ev.clientY)?.closest<HTMLElement>("[data-page-id]");
       const over = el?.dataset.pageId;
       if (!el || !over || over === id) return;
@@ -148,6 +178,7 @@ export default function Organize() {
       setItemsState(order);
     };
     const end = () => {
+      ghost?.remove();
       window.removeEventListener("pointermove", moveTo);
       window.removeEventListener("pointerup", end);
       window.removeEventListener("pointercancel", end);

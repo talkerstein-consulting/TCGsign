@@ -42,7 +42,7 @@ The Editor opens a PDF with PDF.js (legacy build, for Safari 18+). You place sig
 - Fields are stored as fractions of the displayed page. On export, each corner goes through PDF.js's `convertToPdfPoint`, which handles `/Rotate` and MediaBox offsets (`src/pdf/engine.ts`).
 - Already-signed files (those with a `/ByteRange`) are saved as an incremental update, so the signed revision stays byte-for-byte intact.
 - Password-protected files open with their password. The exported copy is not password protected.
-- Text uses Helvetica, so characters outside Latin-1 are blocked on Review with an explanation.
+- Fonts: when a PDF's text uses one of 12 bundled Google fonts, Edit shows that font and export embeds it (subset to the characters used). The fonts are Roboto, Open Sans, Lato, Montserrat, Inter, Poppins, Source Sans 3, Noto Sans, Noto Serif, Merriweather, Playfair Display and Roboto Mono, matched by the font name in the PDF (`src/pdf/fonts.ts`). They come from the `@expo-google-fonts/*` packages (SIL Open Font License) with regular, bold, italic and bold italic. Together they add about 16 MB to the build, but each style is fetched only when a document uses it, and nothing is requested from Google. Any other font falls back to Helvetica, Times or Courier, which cover Latin-1 only, so other characters are blocked on Review with an explanation. A bundled font that lacks a character (for example Greek in Merriweather) is reported on export. `node test/make-google-fonts.mjs` writes a fixture with Roboto, Merriweather and Montserrat Bold text.
 
 ## Preview bar
 

@@ -62,7 +62,8 @@
 .gripLive { cursor: grab; touch-action: none; color: var(--text-muted); background: rgb(255 255 255 / .85); }
 .gripLive:hover { color: var(--steel); background: #fff; }
 .gripLive::before { content: ""; position: absolute; inset: -8px; }
-.thumb[data-dragging] { opacity: .55; border-style: dashed; border-color: var(--orange); }
+/* The slot a dragged page will drop into; the page itself follows the pointer as a lifted copy. */
+.thumb[data-dragging] { opacity: .3; border-style: dashed; border-color: var(--orange); }
 .thumb[data-dragging] .gripLive { cursor: grabbing; }
 
 /* Lines that stand in for page text in mock-ups and placeholders. */

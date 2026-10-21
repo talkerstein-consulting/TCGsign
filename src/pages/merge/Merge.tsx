@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent } from "react";
 import { useNavigate } from "react-router";
-import { ArrowDown, ArrowUp, Download, FilePen, FilePlus2, GripVertical, Lock, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Combine, Download, FilePen, FilePlus2, GripVertical, Lock, Trash2 } from "lucide-react";
 import { Alert, Badge, Button, Field, IconButton, Input, PageHeader, Toast } from "../../components/ui";
 import { DropZone, PrivacyNote } from "../../components/pdf";
 import type { PDFDocumentProxy } from "pdfjs-dist/legacy/build/pdf.mjs";
@@ -233,6 +233,8 @@ export default function Merge() {
       )}
       {error && <Alert tone="err" title="Couldn't make the PDF">{error}</Alert>}
 
+      {/* One connected stroke runs down the files and ends in the merged result, so it reads as "these become one". */}
+      <div className={s.flow}>
       <ol className={s.list} aria-label="Files, in merge order">
         {sources.map((x, i) => (
           <li key={x.id} className={s.row} data-source-id={x.id} data-dragging={dragId === x.id || undefined} data-status={x.status}
@@ -273,6 +275,13 @@ export default function Merge() {
           </li>
         ))}
       </ol>
+        <p className={s.result} data-ready={ready.length >= 2 || undefined} aria-live="polite">
+          <Combine aria-hidden />
+          {ready.length >= 2
+            ? <span>Merged into <strong>{fileName}</strong> · {plural(totalPages, "page")} from {plural(ready.length, "file")}</span>
+            : <span>Add at least two PDFs that open to merge them</span>}
+        </p>
+      </div>
 
       <div className={s.footer}>
         <input ref={addInput} type="file" accept="application/pdf,.pdf" multiple hidden

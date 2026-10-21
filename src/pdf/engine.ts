@@ -12,7 +12,9 @@ import {
   setTextRenderingMode, showText, type Color, type PDFContext, type PDFFont, type PDFImage, type PDFObject, type PDFPage,
 } from "@cantoo/pdf-lib";
 import { NotAPdf, PasswordNeeded } from "./errors";
-import { DEFAULT_TEXT_STYLE, TEXT_BASELINE, TEXT_PAD_X, TEXT_SIZE, unsupportedChars, type FontFace, type TextLine, type TextStyle } from "./text";
+import { DEFAULT_TEXT_STYLE, TEXT_BASELINE, TEXT_PAD_X, TEXT_SIZE, isGoogleFace, unsupportedChars, type FontFace, type TextLine, type TextStyle } from "./text";
+import fontkit from "@cantoo/fontkit";
+import { fontBytes, googleFont, googleFontFor } from "./fonts";
 
 GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -115,8 +117,10 @@ type FontInfo = { name?: string; bold?: boolean; black?: boolean; italic?: boole
 /** Family, weight and slant from the font PDF.js loaded for this text (subset prefixes like "ABCDEF+" ignored). */
 function styleOf(info: FontInfo | undefined, family?: string): TextLine["style"] {
   const name = (info?.name ?? "").replace(/^[A-Z]{6}\+/, "");
-  const font: FontFace = info?.isMonospace || /courier|mono|consol/i.test(name) || family === "monospace" ? "mono"
-    : info?.isSerifFont || /times|serif|georgia|garamond|cambria|minion|book/i.test(name) || family === "serif" ? "serif" : "sans";
+  // A bundled Google font is used as itself; anything else falls back to the closest standard font.
+  const font: FontFace = googleFontFor(name)
+    ?? (info?.isMonospace || /courier|mono|consol/i.test(name) || family === "monospace" ? "mono"
+    : info?.isSerifFont || /times|serif|georgia|garamond|cambria|minion|book/i.test(name) || family === "serif" ? "serif" : "sans");
   return {
     font,
     bold: !!(info?.bold || info?.black) || /bold|black|heavy|semibold|demi/i.test(name),
@@ -220,8 +224,8 @@ function drawBox(page: PDFPage, vp: PageViewport, b: Box, color: Color) {
   page.drawRectangle({ x, y, width: b.w * vp.width, height: b.h * vp.height, color, rotate: degrees(vp.rotation) });
 }
 
-/** Regular, bold, italic, bold italic. */
-const FONT_NAMES: Record<FontFace, [StandardFonts, StandardFonts, StandardFonts, StandardFonts]> = {
+/** Regular, bold, italic, bold italic. Bundled Google fonts are embedded instead (see exportPdf). */
+const FONT_NAMES: Record<"sans" | "serif" | "mono", [StandardFonts, StandardFonts, StandardFonts, StandardFonts]> = {
   sans: [StandardFonts.Helvetica, StandardFonts.HelveticaBold, StandardFonts.HelveticaOblique, StandardFonts.HelveticaBoldOblique],
   serif: [StandardFonts.TimesRoman, StandardFonts.TimesRomanBold, StandardFonts.TimesRomanItalic, StandardFonts.TimesRomanBoldItalic],
   mono: [StandardFonts.Courier, StandardFonts.CourierBold, StandardFonts.CourierOblique, StandardFonts.CourierBoldOblique],
@@ -371,8 +375,19 @@ export async function exportPdf(original: Uint8Array, doc: PDFDocumentProxy, fie
   const incremental = signed && !flatten.length;
   const pdf = await PDFDocument.load(original.slice(), { password, forIncrementalUpdate: incremental, updateMetadata: false });
   const pages = pdf.getPages();
-  const fonts = new Map<StandardFonts, PDFFont>();
+  const fonts = new Map<string, PDFFont>();
   const fontFor = async (st: TextStyle) => {
+    if (isGoogleFace(st.font)) {
+      // The matched Google font, embedded and subset to the characters actually used.
+      const key = `${st.font}:${st.bold}:${st.italic}`;
+      let font = fonts.get(key);
+      if (!font) {
+        pdf.registerFontkit(fontkit);
+        font = await pdf.embedFont(await fontBytes(st.font, st.bold, st.italic), { subset: true });
+        fonts.set(key, font);
+      }
+      return font;
+    }
     const name = FONT_NAMES[st.font][(st.bold ? 1 : 0) + (st.italic ? 2 : 0)];
     let font = fonts.get(name);
     if (!font) { font = await pdf.embedFont(name); fonts.set(name, font); }
@@ -406,7 +421,14 @@ export async function exportPdf(original: Uint8Array, doc: PDFDocumentProxy, fie
       drawCheck(page, vp, f);
     } else {
       const style = f.style ?? DEFAULT_TEXT_STYLE;
-      drawTextIn(page, vp, f, f.text!.trim(), await fontFor(style), style);
+      const font = await fontFor(style), text = f.text!.trim();
+      if (isGoogleFace(style.font)) {
+        // Embedded fonts cover a lot, but not everything; say which characters are missing rather than print boxes.
+        const have = new Set(font.getCharacterSet());
+        const missing = [...new Set([...text].filter((ch) => ch.trim() && !have.has(ch.codePointAt(0)!)))];
+        if (missing.length) throw new Error(`Text on page ${f.page} has characters ${googleFont(style.font).label} doesn't include: ${missing.map((c) => `"${c}"`).join(" ")}. Change them, or pick another font for that text.`);
+      }
+      drawTextIn(page, vp, f, text, font, style);
     }
   }
 

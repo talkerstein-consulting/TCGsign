@@ -40,7 +40,7 @@ function Files() {
       <h3>Messages you might see</h3>
       <div className={s.examples}>
         <InlineError title="Couldn't open report.pdf">It isn't a valid PDF, or it's damaged. Try exporting it again from the app that made it.</InlineError>
-        <InlineError title={`Text on page 2 has characters the PDF can't show: "😀". Change it in Edit to download.`}>Added text uses Helvetica, which covers Western European letters only. Replace emoji or other scripts, and Download unlocks.</InlineError>
+        <InlineError title={`Text on page 2 has characters the PDF can't show: "😀". Change it in Edit to download.`}>Arial, Times New Roman and Courier New cover Western European letters only. Replace emoji or other scripts, or pick a Google font for that text, and Download unlocks.</InlineError>
       </div>
     </>
   );
@@ -54,7 +54,7 @@ function Cant() {
       <li><strong>Redact.</strong> Covering text isn't redaction. Permanent redaction is planned for Phase 2.</li>
       <li><strong>Send for signature.</strong> Remote signing with other people is planned for Phase 3.</li>
       <li><strong>Keep bookmarks and form fields through Organize or Merge.</strong> Pages are copied into a new file, so bookmarks, the interactive form-field tree and digital signatures don't carry over.</li>
-      <li><strong>Fonts other than Helvetica.</strong> Added text uses Helvetica, so characters outside Western European letters are blocked when you download.</li>
+      <li><strong>Every font.</strong> If a PDF uses one of 12 bundled Google fonts (Roboto, Open Sans, Lato, Montserrat, Inter, Poppins, Source Sans 3, Noto Sans, Noto Serif, Merriweather, Playfair Display, Roboto Mono), edits use that font. Any other font is matched to Arial, Times New Roman or Courier New. Those three cover Western European letters only, and no font here covers emoji.</li>
       <li><strong>Sync between devices.</strong> There's no account or server. Drafts and signatures live in this browser only.</li>
     </ul>
   );

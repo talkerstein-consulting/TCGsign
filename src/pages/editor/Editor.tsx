@@ -11,9 +11,10 @@ import {
 } from "../../components/pdf";
 import type { Box, Field, FieldImage, FieldKind, PageInfo } from "../../pdf/engine";
 import {
-  DEFAULT_TEXT_PT, DEFAULT_TEXT_STYLE, TEXT_BASELINE, TEXT_PAD_X, TEXT_SIZE, textWidth, type TextLine, type TextStyle,
+  DEFAULT_TEXT_PT, DEFAULT_TEXT_STYLE, TEXT_BASELINE, TEXT_PAD_X, TEXT_SIZE, isGoogleFace, textWidth, type TextLine, type TextStyle,
 } from "../../pdf/text";
 import { imageFromFile } from "../../pdf/signature";
+import { loadWebFont, type GoogleFontId } from "../../pdf/fonts";
 import { useDocument } from "../../state/document";
 import { DRAFT_DAYS } from "../../state/drafts";
 import { useOpenFile } from "../useOpenFile";
@@ -148,6 +149,26 @@ export default function Editor() {
   const [painter, setPainter] = useState<{ style: TextStyle; size: number } | null>(null);
   const [guides, setGuides] = useState<Guides | null>(null);
   const pageText = usePageText(mode === "edit" ? doc?.pdf : undefined);
+
+  // Bundled Google fonts matched from the PDF (or picked in the toolbar) load on demand; once one is
+  // ready, re-render so text shows and measures in the real font.
+  const [, setFontsReady] = useState(0);
+  const fontKeys = [
+    ...fields.map((f) => f.style),
+    ...[...pageText.pages.values()].flatMap((p) => p.lines ?? []).map((l) => l.style),
+    nextStyle,
+  ].filter((st): st is NonNullable<typeof st> => !!st && isGoogleFace(st.font))
+    .map((st) => `${st.font}|${st.bold}|${st.italic}`);
+  const fontKey = [...new Set(fontKeys)].sort().join(",");
+  useEffect(() => {
+    if (!fontKey) return;
+    let live = true;
+    Promise.allSettled(fontKey.split(",").map((k) => {
+      const [id, bold, italic] = k.split("|");
+      return loadWebFont(id as GoogleFontId, bold === "true", italic === "true");
+    })).then(() => { if (live) setFontsReady((n) => n + 1); });
+    return () => { live = false; };
+  }, [fontKey]);
   const desk = useRef<HTMLDivElement>(null);
   const dock = useRef<HTMLDivElement>(null);
   const [deskWidth, setDeskWidth] = useState(0);

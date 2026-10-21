@@ -35,3 +35,26 @@
 .footer { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--gap-field); }
 .nameField { width: min(100%, 320px); }
 .help { font-size: var(--fs-sm); color: var(--text-muted); max-width: 72ch; line-height: 1.55; }
+
+/* ---------- the merge stroke ----------
+   A rail on the left joins every file and ends in the merged result. Files that will be merged get a
+   solid node and a solid branch; skipped ones (locked, damaged, still reading) a hollow node and a dashed branch. */
+.flow { position: relative; display: grid; gap: var(--gap-tight); padding-left: 40px; }
+.flow::before { content: ""; position: absolute; left: 15px; top: 38px; bottom: 22px; width: 2px; border-radius: 1px; background: var(--steel-50); }
+.flow .row::before { content: ""; position: absolute; z-index: 1; left: -31px; top: 50%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; background: var(--steel); box-shadow: 0 0 0 3px var(--bg); }
+.flow .row::after { content: ""; position: absolute; left: -22px; top: 50%; width: 22px; margin-top: -1px; border-top: 2px solid var(--steel-50); }
+.flow .row:not([data-status="ready"])::before { background: var(--bg); border: 2px solid var(--steel-50); }
+.flow .row:not([data-status="ready"])::after { border-top-style: dashed; }
+.result { position: relative; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 var(--gap-field); font-size: var(--fs-md); color: var(--text-muted); }
+.result svg { flex: none; width: 18px; height: 18px; }
+.result::before { content: ""; position: absolute; left: -34px; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 50%; background: var(--bg); border: 2px solid var(--steel-50); }
+.result[data-ready] { color: var(--text); }
+.result[data-ready]::before { background: var(--orange); border-color: var(--orange); box-shadow: 0 0 0 3px var(--bg); }
+.result[data-ready] svg { color: var(--orange); }
+@media (max-width: 640px) {
+  .flow { padding-left: 28px; }
+  .flow::before { left: 9px; }
+  .flow .row::before { left: -25px; }
+  .flow .row::after { left: -16px; width: 16px; }
+  .result::before { left: -28px; }
+}

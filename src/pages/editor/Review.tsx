@@ -60,7 +60,7 @@ export default function Review() {
   const removing = edits > 0 && removeEdited;
   const pageList = (ns: number[]) => `page${ns.length === 1 ? "" : "s"} ${ns.join(", ")}`;
   const badText = useMemo(() => fields.flatMap((f) => {
-    const bad = f.text ? unsupportedChars(f.text) : [];
+    const bad = f.text ? unsupportedChars(f.text, f.style?.font) : [];
     return bad.length ? [{ f, bad }] : [];
   }), [fields]);
 

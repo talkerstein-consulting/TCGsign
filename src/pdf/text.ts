@@ -1,5 +1,6 @@
 // Text metrics shared by the on-screen field and the exported PDF, so typed text lands
 // in the same place in both. Kept apart from engine.ts so screens can use it without loading PDF.js.
+import { GOOGLE_FONTS, type GoogleFontId } from "./fonts";
 
 /** Font size as a fraction of the field's height. */
 export const TEXT_SIZE = 0.62;
@@ -8,7 +9,8 @@ export const TEXT_BASELINE = 0.72;
 /** Left and right inset in points. */
 export const TEXT_PAD_X = 2;
 
-export type FontFace = "sans" | "serif" | "mono";
+/** The three standard stand-ins, or a bundled Google font (src/pdf/fonts.ts) matched from the PDF. */
+export type FontFace = "sans" | "serif" | "mono" | GoogleFontId;
 export type TextAlign = "left" | "center" | "right";
 /** Formatting for text and date fields. The size isn't here: it follows the field's height (TEXT_SIZE). */
 export type TextStyle = {
@@ -23,13 +25,21 @@ export const DEFAULT_TEXT_STYLE: TextStyle = { font: "sans", bold: false, italic
 /** Google Docs' default size, in points. */
 export const DEFAULT_TEXT_PT = 11;
 
-/** Named as Google Docs names them. Each is metric-compatible with the PDF standard font export draws with. */
-export const FONT_FACES: { id: FontFace; label: string; css: string }[] = [
+/**
+ * The standard three are named as Google Docs names them, and each is metric-compatible with the PDF
+ * standard font export draws with. The bundled Google fonts follow, shown and exported as themselves.
+ */
+export const FONT_FACES: { id: FontFace; label: string; css: string; google?: boolean }[] = [
   { id: "sans", label: "Arial", css: "Helvetica, Arial, sans-serif" },
   { id: "serif", label: "Times New Roman", css: "'Times New Roman', Times, serif" },
   { id: "mono", label: "Courier New", css: "'Courier New', Courier, monospace" },
+  ...GOOGLE_FONTS.map((f) => ({
+    id: f.id, label: f.label, google: true,
+    css: `'${f.label}', ${f.kind === "serif" ? "'Times New Roman', serif" : f.kind === "mono" ? "'Courier New', monospace" : "Helvetica, Arial, sans-serif"}`,
+  })),
 ];
-export const fontCss = (face: FontFace = "sans") => FONT_FACES.find((f) => f.id === face)!.css;
+export const fontCss = (face: FontFace = "sans") => (FONT_FACES.find((f) => f.id === face) ?? FONT_FACES[0]).css;
+export const isGoogleFace = (face: FontFace | undefined): face is GoogleFontId => !!face && face !== "sans" && face !== "serif" && face !== "mono";
 
 let measureCtx: CanvasRenderingContext2D | null = null;
 /** Width of `text` in points at `size` pt, in the style's font. */
@@ -54,8 +64,14 @@ export type TextLine = {
   source: "pdf" | "ocr";
 };
 
-/** Characters the PDF standard fonts (WinAnsi) can't draw. Checked before export so the user can fix them. */
-export function unsupportedChars(text: string) {
+/**
+ * Characters the PDF standard fonts (WinAnsi) can't draw. Checked before export so the user can fix them.
+ * Bundled Google fonts all cover Latin Extended (most European languages); some also cover Greek and
+ * Cyrillic (Roboto, Open Sans, Noto). Text in one of them isn't checked here; export reports any
+ * character that particular font is missing.
+ */
+export function unsupportedChars(text: string, face?: FontFace) {
+  if (isGoogleFace(face)) return [];
   const bad = new Set<string>();
   for (const ch of text) {
     const c = ch.codePointAt(0)!;

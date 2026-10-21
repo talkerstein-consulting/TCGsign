@@ -221,7 +221,7 @@ export default function StylePage() {
             </Spec>
           </Group>
 
-          <Group id="overlays" title="Overlays" intro="Modals for decisions; full screen on phones. On phones, editing tools open in a bottom sheet so the page stays visible.">
+          <Group id="overlays" title="Overlays" intro="Modals for decisions, styled like Google's dialogs: a white card, plain title, actions bottom-right. Large ones go full screen on phones. On phones, editing tools open in a bottom sheet so the page stays visible.">
             <Spec name="Modal" code="<Modal open onClose title footer />">
               <Button variant="danger" icon={<Trash2 />} onClick={() => setModal(true)}>Delete all drafts…</Button>
               <Modal open={modal} onClose={() => setModal(false)} size="sm" title="Delete all drafts on this device?"
@@ -259,7 +259,7 @@ export default function StylePage() {
             <Spec name="Editor toolbar" code="<EditorToolbar tool zoom />" variant="stack">
               <EditorToolbar tool={tool} onTool={setTool} zoom={zoom} onZoom={setZoom} canUndo />
             </Spec>
-            <Spec name="Page and placed fields" code="<FieldBox field pageHeight selected />" note="Empty fields are orange so you can see what's left. The selected field shows its type, a delete button and a resize handle. Text uses Helvetica, the same font the exported PDF uses." variant="stack">
+            <Spec name="Page and placed fields" code="<FieldBox field pageHeight selected />" note="Empty fields are orange so you can see what's left. The selected field shows its type, a delete button and a resize handle. Text uses the same font the exported PDF uses: the PDF's own Google font when it's one of the bundled 12, otherwise Helvetica." variant="stack">
               <PageCanvas pages={1}>{(_, h) => fields.map((f) => (
                 <FieldBox key={f.id} field={f} pageHeight={h} selected={sel === f.id} onPointerDown={() => setSel(f.id)}
                   onDelete={() => setToast("Field deleted (demo)")} onResizePointerDown={() => {}} />
