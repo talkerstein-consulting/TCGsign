@@ -1,0 +1,18 @@
+.wrap { display: grid; gap: var(--gap-block); max-width: 860px; }
+.panel { display: grid; align-content: start; gap: var(--gap-field); font-size: var(--fs-md); line-height: 1.55; }
+.panel h3 { margin-top: var(--gap-tight); font: 600 var(--fs-lg)/1.3 var(--font-body); }
+.panel p { color: var(--text-muted); max-width: 70ch; }
+.panel a { color: var(--orange); font-weight: 600; }
+
+.facts { display: grid; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); }
+.facts > div { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--gap-field); padding: var(--gap-field); }
+.facts > div + div { border-top: 1px solid var(--border); }
+.facts dt { font-weight: 600; }
+.facts dd { margin: 0; color: var(--text-muted); }
+@media (max-width: 640px) { .facts > div { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+
+.examples { display: grid; gap: var(--gap-tight); }
+
+.cant { display: grid; gap: var(--gap-field); padding-left: 1.2em; list-style: disc; max-width: 75ch; }
+.cant li { color: var(--text-muted); }
+.cant strong { color: var(--text); }

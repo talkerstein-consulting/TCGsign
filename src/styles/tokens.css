@@ -1,0 +1,95 @@
+/*
+  Design tokens, ported from the TCG client portal
+  (tcgportal-clients: src/app/workspace-tokens.css + portal-workspace.css, Oct 2026).
+  Keep names identical so components can move between the two apps.
+  Light theme only, same as the portal: it pins a light workspace regardless of OS setting.
+*/
+@font-face {
+  font-family: "Cheltenham";
+  src: url("../assets/fonts/CheltenhamStdBoldCond.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Slowly Signature";
+  src: url("../assets/fonts/SlowlySignature.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+
+  /* brand: the only three colours */
+  --sea: #F3F7F3;
+  --steel: #19254A;
+  --orange: #B3530E;
+  --steel-hover: #0C1430;
+  --orange-hover: #8A3E08;
+
+  /* tints (opacity mixes of the brand colours only) */
+  --steel-70: rgb(25 37 74 / .7);
+  --steel-50: rgb(25 37 74 / .5);
+  --steel-15: rgb(25 37 74 / .15);
+  --steel-08: rgb(25 37 74 / .08);
+  --steel-04: rgb(25 37 74 / .04);
+  --orange-15: rgb(179 83 14 / .14);
+  --orange-08: rgb(179 83 14 / .08);
+
+  /* roles */
+  --bg: #F9F8F5;
+  --surface: #fff;
+  --paper: #FCFCFA;
+  --text: var(--steel);
+  --text-muted: var(--steel-70);
+  --text-faint: var(--steel-50);
+  --border: var(--steel-15);
+  --border-strong: var(--steel);
+  --accent: var(--orange);
+  --focus: var(--orange);
+
+  /* status */
+  --ok: #2F6B4F; --ok-bg: rgb(47 107 79 / .1);
+  --warn: var(--orange); --warn-bg: var(--orange-15);
+  --danger: #A3321A; --danger-hover: #7C2210;
+  --err: var(--danger); --err-bg: rgb(163 50 26 / .1);
+  --info: var(--steel); --info-bg: var(--steel-08);
+
+  /* PDF tool only: the page canvas behind documents, and signature ink */
+  --desk: #E7E8E3;
+  --ink: #1B2E7A;
+
+  /* type */
+  --font-body: "Jost", Arial, Helvetica, sans-serif;
+  --font-heading: "Cheltenham", Georgia, "Times New Roman", serif;
+  --font-signature: "Slowly Signature", "Segoe Script", cursive;
+  --font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --fs-xs: 12px; --fs-sm: 13px; --fs-md: 14px; --fs-lg: 16px;
+  --fs-h3: 20px; --fs-h2: 26px; --fs-h1: 34px; --fs-kpi: 36px;
+  --lh-head: 1.25; --lh-body: 1.65;
+  --type-gap: 12px;
+
+  /* space & shape */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+  /* Radius: xs marks in content, sm items inside controls, r controls,
+     lg surfaces, xl overlays, pill status only (people are circles). */
+  --r-xs: 4px; --r-sm: 6px; --r: 10px; --r-lg: 14px; --r-xl: 20px; --r-pill: 999px;
+  --control-h: 44px; --control-h-sm: 36px; /* 44 = minimum touch target */
+
+  /* layout rhythm, 4px grid */
+  --gap-tight: 8px; --gap-field: 16px; --gap-block: 24px; --gap-section: 48px;
+  --pad-card: 24px; --pad-control: 12px; --page-gutter: 32px;
+  --t: 120ms ease;
+
+  --shadow-pop: 0 8px 24px rgb(25 37 74 / .16);
+  --shadow-modal: 0 16px 48px rgb(25 37 74 / .22);
+  --shadow-page: 0 1px 2px rgb(25 37 74 / .12), 0 6px 18px rgb(25 37 74 / .08);
+
+  --z-header: 40; --z-drawer: 50; --z-modal: 60; --z-dropdown: 1000;
+
+  /* App shell: top bar height, and the line sticky page toolbars sit on (below the bar + notch). */
+  --header-h: 64px;
+  --sticky-top: calc(var(--preview-h, 0px) + var(--header-h) + env(safe-area-inset-top, 0px) + 8px);
+}
+
+@media (max-width: 640px) { :root { --page-gutter: 16px; --pad-card: 16px; --gap-section: 32px; } }
+@media (max-width: 767px) { :root { --header-h: 58px; } }

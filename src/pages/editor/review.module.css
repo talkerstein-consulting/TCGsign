@@ -1,0 +1,43 @@
+/* Review & download: document on the left (full bleed, flush under the top bar), sidebar on the right. */
+.review {
+  --gutter: clamp(20px, 4vw, 56px);
+  --top: calc(var(--preview-h, 0px) + var(--header-h) + env(safe-area-inset-top, 0px));
+  display: grid; grid-template-columns: minmax(0, 1fr) 320px;
+  margin: -40px calc(-1 * var(--gutter)) -64px;
+}
+
+.doc { display: grid; justify-items: center; gap: 40px; min-width: 0; padding: 32px 24px 64px; background: var(--desk); }
+.pageSlot { scroll-margin-top: calc(var(--top) + 16px); }
+/* Show fields as they'll print: no editing outlines, tints or "tap to" hints. */
+.doc .pageSlot [data-field-id], .pages .thumb [data-field-id] { border-color: transparent; background: transparent; box-shadow: none; pointer-events: none; }
+.doc .pageSlot [data-empty="true"], .pages .thumb [data-empty="true"] { visibility: hidden; }
+
+.side { position: sticky; top: var(--top); align-self: start; display: flex; flex-direction: column; height: calc(100dvh - var(--top)); background: var(--surface); border-left: 1px solid var(--border); }
+.panel { display: grid; gap: var(--gap-field); padding: var(--gap-block); border-bottom: 1px solid var(--border); }
+.panelTitle { font: 700 var(--fs-h3)/var(--lh-head) var(--font-heading); }
+.note { font-size: var(--fs-sm); color: var(--text-muted); line-height: 1.45; }
+/* A choice with its consequence right under it. */
+.option { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--border); border-radius: var(--r); background: var(--paper); }
+.ok { font-size: var(--fs-sm); font-weight: 500; color: var(--ok); line-height: 1.45; }
+.error { font-size: var(--fs-sm); font-weight: 500; color: var(--danger); line-height: 1.45; }
+
+/* Pages view: a scrolling column of thumbnails under the download panel. */
+.pages { flex: 1; min-height: 0; overflow-y: auto; display: grid; align-content: start; justify-items: center; gap: var(--gap-field); padding: var(--gap-block) var(--gap-field); background: var(--paper); }
+.thumb { display: grid; justify-items: center; gap: 6px; padding: 6px; border: 2px solid transparent; border-radius: var(--r); background: transparent; }
+.thumb:hover { background: var(--steel-04); }
+.thumb[aria-current="page"] { border-color: var(--orange); }
+.thumb > * { pointer-events: none; }
+.thumbNum { font: 600 var(--fs-xs)/1 var(--font-body); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+/* Phones: download panel first, then the document; the pages view is left out (just scroll). */
+@media (max-width: 900px) {
+  .review { grid-template-columns: minmax(0, 1fr); margin-top: -30px; }
+  .side { order: -1; position: static; height: auto; border-left: 0; border-bottom: 1px solid var(--border); }
+  .pages { display: none; }
+  .doc { padding: 16px 0 96px; gap: 28px; }
+}
+/* Finish state after a download or share. */
+.done { display: grid; gap: 6px; padding: 14px; border: 1px solid rgb(47 107 79 / .35); border-radius: var(--r); background: rgb(47 107 79 / .06); }
+.doneTitle { display: flex; align-items: center; gap: 8px; font: 600 var(--fs-md)/1.3 var(--font-body); color: var(--ok); }
+.doneTitle svg { width: 18px; height: 18px; flex: none; }
+.doneActions { display: flex; flex-wrap: wrap; gap: var(--gap-tight); margin-top: 4px; }

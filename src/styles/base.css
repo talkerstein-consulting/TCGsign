@@ -1,0 +1,32 @@
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 15px/1.5 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; }
+h1, h2, h3 { line-height: var(--lh-head); text-wrap: balance; }
+:is(h1, h2, h3) + p { margin-top: var(--type-gap); }
+img, svg, canvas { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button:not(:disabled), a, [role="button"] { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; }
+code { font-family: var(--font-mono); font-size: .92em; padding: 1px 5px; border-radius: var(--r-xs); background: var(--steel-08); }
+
+/* Focus: one ring, all four sides, drawn inside so overflow containers can't clip it. Keyboard only. */
+:focus:not(:focus-visible) { outline: none; }
+:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--focus), inset 0 0 0 4px var(--surface); }
+:is(input:not([type="checkbox"], [type="radio"], [type="range"]), textarea, select):focus-visible { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }
+:is(input[type="checkbox"], input[type="radio"]):focus-visible { box-shadow: none; outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

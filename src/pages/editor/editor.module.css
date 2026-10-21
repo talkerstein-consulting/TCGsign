@@ -1,0 +1,105 @@
+.editor { display: grid; grid-template-columns: minmax(0, 1fr); /* never wider than the screen, whatever the bar holds */ min-width: 0; margin-top: -40px;
+  /* Where the pinned bar docks: straight under the top bar (and the preview bar, when it shows). */
+  --tools-top: calc(var(--preview-h, 0px) + var(--header-h) + env(safe-area-inset-top, 0px));
+  --gutter: clamp(20px, 4vw, 56px); }
+@media (max-width: 767px) { .editor { margin-top: -30px; } }
+
+/* The pinned signing bar: progress and next action on top, field tools below. Full width, flush under the top bar. */
+.dock { position: sticky; top: var(--tools-top); z-index: 5; margin-inline: calc(-1 * var(--gutter)); background: var(--surface); border-bottom: 1px solid var(--border); }
+/* Laid out like the Google Docs header: title over the menu bar, actions on the right. */
+/* 12px above the title, 12px from the menus down to the toolbar; title and menus sit 4px apart. */
+.signBar { display: flex; align-items: center; gap: 12px var(--gap-field); padding: 12px var(--gutter) 12px; }
+.docHead { display: grid; gap: 4px; flex: 1 1 auto; min-width: 0; }
+.saveState { flex: none; font: 400 var(--fs-xs)/1.3 var(--font-body); color: var(--text-muted); }
+/* The toolbar: a softly filled bar running edge to edge under the header. */
+.dock > [role="toolbar"], .fmtRow > [role="toolbar"] { margin: 0; padding-inline: max(12px, calc(var(--gutter) - 32px)); border: 0; border-top: 1px solid var(--steel-08); border-radius: 0; background: var(--steel-08); }
+.titleRow { display: flex; align-items: center; gap: 14px; flex: none; min-width: 0; max-width: 60%; font-family: var(--font-body); white-space: nowrap; }
+/* Title | save state | hint: each part after the title gets a thin divider, so they read as separate items. */
+.titleRow > :not(:first-child):not(.donePill) { padding-left: 14px; border-left: 1px solid var(--steel-15); line-height: 18px; }
+/* Large, plain title as in Docs; it reads as the document's name, with the menus small beneath it. */
+.docName { max-width: 40ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 22px/1.25 var(--font-body); letter-spacing: -.005em; color: var(--text); }
+@media (max-width: 767px) { .docName { font-size: 18px; } }
+.count { display: inline-flex; align-items: center; gap: 6px; font: 600 var(--fs-md)/1.3 var(--font-body); color: var(--text); font-variant-numeric: tabular-nums; }
+/* One centred row: the title line, then the progress bar filling only the space left before the buttons. */
+.progress { display: flex; align-items: center; gap: var(--gap-field); flex: 1 1 auto; min-width: 0; }
+.progress > [role="progressbar"] { flex: 1 1 auto; min-width: 48px; margin-top: 0; }
+.titleRow { overflow: hidden; }
+.titleRow > .detail { overflow: hidden; text-overflow: ellipsis; }
+/* Guidance when there's nothing to count yet (empty document, or the Edit tab). Shown on phones too. */
+.hint { overflow: hidden; text-overflow: ellipsis; font: 400 var(--fs-sm)/1.3 var(--font-body); color: var(--text-muted); }
+/* No progress bar: the hint can use the whole row. */
+.progress > .titleRow:only-child { max-width: none; flex: 1 1 auto; }
+.detail { font: 400 var(--fs-sm)/1.3 var(--font-body); color: var(--text-muted); }
+/* Done: its own green pill beside the title, instead of a line over a full progress bar. */
+.donePill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border: 1px solid rgb(47 107 79 / .35); border-radius: var(--r-pill); background: var(--surface); color: var(--ok); font: 600 var(--fs-sm)/1.2 var(--font-body); white-space: nowrap; }
+.donePill svg { flex: none; width: 16px; height: 16px; }
+.actions { display: flex; align-items: center; gap: var(--gap-tight); margin-left: auto; }
+.notice { margin-top: var(--gap-field); }
+.sheetActions { display: grid; gap: var(--gap-tight); padding-top: var(--gap-tight); border-top: 1px solid var(--border); }
+.sheetActions > * { justify-content: flex-start; }
+@media (max-width: 767px) {
+  .signBar { flex-wrap: nowrap; padding-block: 8px; }
+  .progress { flex: 1 1 auto; }
+  .detail { display: none; } /* the count and the Sign all button say enough on a phone */
+}
+.placingHint { opacity: .7; }
+
+/* Floats over the page instead of sitting in the flow, so the page doesn't jump while you aim. */
+.placingBar { position: fixed; z-index: var(--z-header); top: calc(var(--tools-top) + var(--dock-h, 120px) + 12px); left: calc(50% + var(--sidebar-w, 0px) / 2); transform: translateX(-50%); display: flex; align-items: center; gap: var(--gap-field); max-width: calc(100vw - var(--sidebar-w, 0px) - 32px); padding: 6px 6px 6px var(--gap-field); border-radius: var(--r-pill); background: var(--steel); color: #fff; font-weight: 500; font-size: var(--fs-md); box-shadow: var(--shadow-pop); animation: drop 160ms ease-out; }
+.placingBar button { color: #fff; border-radius: var(--r-pill); }
+.placingBar button:hover:not(:disabled) { background: rgb(255 255 255 / .12); }
+@keyframes drop { from { opacity: 0; transform: translate(-50%, -6px); } }
+@media (max-width: 767px) { .placingBar { top: calc(var(--tools-top) + var(--dock-h, 56px) + 8px); font-size: var(--fs-sm); } }
+
+.desk { display: grid; justify-items: start; gap: 40px; padding: 24px 0 56px; margin-inline: calc(-1 * var(--gutter)); margin-top: var(--gap-field); background: var(--desk); overflow-x: auto; overscroll-behavior-x: contain; min-height: 60vh; }
+@media (max-width: 767px) { .desk { padding: 12px 0 96px; gap: 28px; } }
+
+/* Auto margins centre a page but, unlike justify-items: center, never push a zoomed page off the left edge. */
+.page { position: relative; flex: none; margin-inline: auto; background: #fff; box-shadow: var(--shadow-page); }
+.page[data-placing] { cursor: crosshair; }
+.page[data-placing]::after { content: ""; position: absolute; inset: 0; outline: 2px dashed var(--orange); outline-offset: 3px; pointer-events: none; }
+.canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.canvas[data-drawn="false"] { visibility: hidden; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-faint); font-size: var(--fs-sm); }
+.retry { padding: 0; border: 0; background: none; color: var(--orange); font: 600 var(--fs-sm)/1.3 var(--font-body); text-decoration: underline; cursor: pointer; }
+.pageNum { position: absolute; bottom: -26px; left: 0; right: 0; text-align: center; font: 500 var(--fs-xs)/1 var(--font-body); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+/* Phone: the tools dock as a full-width bar sitting on the bottom tabs (tabs: 8 + 54 + inset + 1px border). */
+.phoneBar { position: fixed; z-index: var(--z-header); left: 0; right: 0; bottom: calc(63px + max(8px, env(safe-area-inset-bottom, 0px))); display: flex; align-items: center; gap: 4px; padding: 6px max(var(--gap-field), env(safe-area-inset-right, 0px)) 6px max(var(--gap-field), env(safe-area-inset-left, 0px)); background: var(--surface); border-top: 1px solid var(--border); }
+.phoneBar > button:last-child { margin-left: auto; }
+
+/* ---------- Edit: Docs toolbar, page text, guides ---------- */
+.fmtRow { padding: 0; container: fmtrow / inline-size; }
+
+/* Text already on the page: outlined on hover, click to change it (Acrobat's edit-text boxes). */
+.textRun { position: absolute; padding: 0; border: 1px dashed transparent; border-radius: 2px; background: transparent; cursor: text; }
+.textRun:hover { border-color: var(--ink); background: rgb(27 46 122 / .05); }
+.textRun[data-ocr]:hover { border-color: var(--orange); background: var(--orange-08); }
+.desk[data-placing] .textRun { pointer-events: none; }
+/* No hover on touch screens, so every editable line shows a faint outline. */
+@media (pointer: coarse) { .textRun { border-color: rgb(27 46 122 / .22); } }
+.desk[data-painter] .textRun, .desk[data-painter] [data-field-id] { cursor: copy; }
+
+/* Alignment guides while dragging, in the red Docs and Slides use. */
+.guideX, .guideY { position: absolute; z-index: 4; pointer-events: none; }
+.guideX { top: 0; bottom: 0; border-left: 1px solid #d93025; }
+.guideY { left: 0; right: 0; border-top: 1px solid #d93025; }
+
+.pageStatus { position: absolute; z-index: 3; top: 8px; left: 8px; display: inline-flex; align-items: center; gap: 6px; max-width: calc(100% - 16px); padding: 5px 10px 5px 8px; border-radius: var(--r-pill); background: var(--steel); color: #fff; font: 500 var(--fs-xs)/1.2 var(--font-body); box-shadow: var(--shadow-pop); pointer-events: none; }
+.pageStatus svg { flex: none; width: 14px; height: 14px; }
+.pageStatus[data-done] { background: var(--surface); color: var(--steel); box-shadow: 0 0 0 1px var(--border); }
+
+/* Phone: formatting for the selected text, docked above the bottom bar (57px: 6 + 44 + 6 + 1px border). */
+.phoneFormat { position: fixed; z-index: var(--z-header); left: 0; right: 0; bottom: calc(63px + max(8px, env(safe-area-inset-bottom, 0px)) + 57px); border-top: 1px solid var(--border); }
+/* Phones: the document name gets the full line; the save state and hint drop to a second line without dividers. */
+@media (max-width: 767px) {
+  .titleRow { max-width: none; flex-wrap: wrap; gap: 2px 10px; }
+  .titleRow > :first-child { max-width: 100%; }
+  .titleRow > :not(:first-child):not(.donePill) { flex-basis: 100%; padding-left: 0; border-left: 0; white-space: normal; }
+}
+/* Phones: the buttons take their own row under the name, so the name never shrinks to a few letters. */
+@media (max-width: 767px) {
+  .signBar { flex-wrap: wrap; row-gap: 8px; }
+  .docHead { flex-basis: 100%; }
+  .actions { margin-left: 0; width: 100%; justify-content: flex-end; }
+}

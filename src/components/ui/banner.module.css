@@ -1,0 +1,30 @@
+/* The drawing fills the banner's right side with a hard left edge (no fade). */
+.art { position: absolute; z-index: -2; inset: 0 0 0 auto; width: 58%; pointer-events: none; overflow: hidden; }
+.fill { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* One grain over the whole banner, art and background alike, under the text. */
+.grain { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+
+/* On page load each bar builds in (staggered), then changes length a few times (4 passes) and settles,
+   so the pattern is already moving when the page opens. The loop only fills forwards, so it doesn't
+   override the build-in while it waits to start. */
+.bar { transform-box: fill-box; --in: calc(var(--d, 0s) * .12); }
+.growX { animation: inX .8s cubic-bezier(.2, .7, .2, 1) var(--in) both, growX 6s ease-in-out calc(var(--in) + .8s) 4 alternate forwards; }
+.growY { animation: inY .8s cubic-bezier(.2, .7, .2, 1) var(--in) both, growY 6s ease-in-out calc(var(--in) + .8s) 4 alternate forwards; }
+.shift { animation: inX .8s cubic-bezier(.2, .7, .2, 1) var(--in) both, shift 6s ease-in-out calc(var(--in) + .8s) 4 alternate forwards; }
+.meshDown { animation: inDown .9s cubic-bezier(.2, .7, .2, 1) var(--in) both, meshDown 5s ease-in-out calc(var(--in) + .9s) 4 alternate forwards; }
+.meshUp { animation: inUp .9s cubic-bezier(.2, .7, .2, 1) var(--in) both, meshUp 5s ease-in-out calc(var(--in) + .9s) 4 alternate forwards; }
+@keyframes inDown { from { transform: translateY(-70px); } to { transform: translateY(0); } }
+@keyframes inUp { from { transform: translateY(70px); } to { transform: translateY(0); } }
+/* The combs part slightly and mesh back together. */
+@keyframes meshDown { from { transform: translateY(0); } to { transform: translateY(-18px); } }
+@keyframes meshUp { from { transform: translateY(0); } to { transform: translateY(18px); } }
+@keyframes inX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes inY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes growX { from { transform: scaleX(1); } to { transform: scaleX(.55); } }
+@keyframes growY { from { transform: scaleY(1); } to { transform: scaleY(.6); } }
+@keyframes shift { from { transform: translateX(0); } to { transform: translateX(-26px); } }
+@media (prefers-reduced-motion: reduce) { .bar { animation: none; } }
+
+@media (max-width: 767px) {
+  .art { position: relative; z-index: -2; order: 9; width: calc(100% + 40px); height: 150px; margin: 8px -20px 0; }
+}

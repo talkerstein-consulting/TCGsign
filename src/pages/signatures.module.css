@@ -1,0 +1,6 @@
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--gap-block); }
+.item { display: grid; align-content: start; gap: var(--gap-field); min-width: 0; }
+.item h2 { font: 700 var(--fs-h2)/var(--lh-head) var(--font-heading); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--gap-tight); }
+.keep { display: grid; gap: 4px; }
+.keep p { font-size: var(--fs-sm); color: var(--text-muted); }

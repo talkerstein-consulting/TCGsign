@@ -1,0 +1,100 @@
+/* App shell in the portal's brand treatment (same navy, link and active-pill styles as the portal sidebar):
+   a sidebar from 1024px, a top bar with a menu drawer below that, and bottom tabs below 768px. */
+.app { display: flex; flex-direction: column; min-height: 100dvh; background: var(--bg); }
+/* The open editor brings its own Docs-style header, so the phone/tablet top bar steps aside. Phone tabs stay. */
+.app[data-bare] { --header-h: 0px; }
+.app[data-bare] .topbar { display: none; }
+/* …and runs edge to edge, so its header and toolbar span the whole content area on wide screens. */
+.app[data-bare] .page { max-width: none; }
+
+/* Sidebar (1024px and up): logo, the page's main action, every screen grouped, then the profile. */
+.sidebar { display: none; }
+@media (min-width: 1024px) {
+  .app { --sidebar-w: 264px; --header-h: 0px; display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); align-items: start; }
+  .topbar { display: none; }
+  /* Nothing is clipped: when the list is taller than the window, the whole sidebar scrolls. */
+  .sidebar { position: sticky; top: var(--preview-h, 0px); display: flex; flex-direction: column; gap: 24px; height: calc(100dvh - var(--preview-h, 0px)); padding: 24px 16px 18px; background: var(--steel); color: #F7F6F3; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #ffffff30 transparent; }
+  .sidebar .brand { margin: 0 0 0 4px; }
+  .sidebar .brandLogo { height: 36px; }
+  .sidebar .product { font-size: 38px; padding-left: 12px; }
+  .sideAction { display: grid; }
+  .sideAction > * { justify-content: center; }
+  .sideNav { flex: 1 0 auto; display: grid; align-content: start; gap: 22px; }
+  .sideNav .group { margin: 0; }
+  .sideNav .group + .group { padding-top: 18px; border-top: 1px solid #ffffff14; }
+  .sideNav .groupLabel { padding: 0 12px 8px; }
+  .sideNav .link { width: 100%; min-height: 42px; margin-block: 2px; white-space: normal; line-height: 1.25; }
+  .sideNav .linkLabel { overflow: visible; text-overflow: clip; }
+  .sideFoot { flex: none; display: flex; align-items: center; gap: 10px; padding: 14px 8px 0; border-top: 1px solid #ffffff1f; font-size: 13px; color: #c9d0e0; }
+  .content { grid-column: 2; }
+}
+
+/* The notch inset is padded once: by the preview bar when it is showing, otherwise here. */
+.topbar { position: sticky; top: var(--preview-h, 0px); z-index: var(--z-header); padding-top: max(0px, env(safe-area-inset-top, 0px) - var(--preview-h, 0px)); background: var(--steel); color: #F7F6F3; box-shadow: 0 1px 0 rgb(255 255 255 / .06), 0 4px 16px rgb(25 37 74 / .18); }
+.bar { display: flex; align-items: center; gap: var(--gap-field); max-width: 1440px; height: var(--header-h); margin-inline: auto; padding-inline: max(clamp(20px, 4vw, 56px), env(safe-area-inset-left, 0px)) max(clamp(20px, 4vw, 56px), env(safe-area-inset-right, 0px)); }
+
+.brand { display: flex; align-items: center; gap: 12px; flex: none; padding: 4px; margin-left: -4px; border-radius: var(--r); color: inherit; text-decoration: none; }
+.brandLogo { height: 40px; width: auto; }
+/* "Sign" in the signature face, as if written next to the logo. */
+/* Signature faces sit low on their line; nudge "Sign" up so it centres on the logo. */
+.product { padding: 0 2px 0 16px; border-left: 1px solid #ffffff30; font: 400 44px/1 var(--font-signature); color: #F7F6F3; transform: translateY(-5px); }
+.brand:focus-visible { box-shadow: inset 0 0 0 2px #dba06c; }
+
+
+/* Links on navy: the portal sidebar's hover and active-pill treatment. */
+.link { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border: 0; border-radius: var(--r); background: transparent; color: #d5dbe8; font: 500 14px/1 var(--font-body); text-decoration: none; white-space: nowrap; transition: color 150ms, background-color 150ms; }
+.link svg { flex: none; width: 16px; height: 16px; }
+.linkLabel { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.link:hover { background: #ffffff12; color: #fff; }
+.link[aria-current="page"] { background: #F7F6F3; color: var(--steel); font-weight: 600; }
+.link:focus-visible { box-shadow: inset 0 0 0 2px #dba06c; }
+.soon { font: 600 9px/1 var(--font-body); letter-spacing: .06em; text-transform: uppercase; padding: 3px 5px; border-radius: var(--r-xs); background: #ffffff18; color: #c9d0e0; }
+
+
+.group { margin-bottom: 18px; }
+.groupLabel { padding: 8px 12px 6px; color: #a8b3cc; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .15em; }
+
+.actions { display: flex; align-items: center; gap: 12px; margin-left: auto; min-width: 0; }
+.avatar { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #F7F6F3; color: var(--steel); font: 700 13px/1 var(--font-heading); }
+
+.menuBtn { display: none; color: #F7F6F3; }
+.menuBtn:hover:not(:disabled) { background: #ffffff18; color: #fff; }
+
+.content { flex: 1; min-width: 0; outline: none; }
+.page { width: 100%; max-width: 1440px; margin-inline: auto; padding: 40px clamp(20px, 4vw, 56px) 64px; display: grid; align-content: start; gap: var(--gap-section); }
+
+.skip { position: fixed; top: 8px; left: 12px; z-index: 100; padding: 12px 20px; border-radius: 6px; background: #fff; transform: translateY(-200%); }
+.skip:focus { transform: none; }
+
+/* Drawer (below 1024px): every screen, grouped, on navy. */
+.drawer { position: fixed; inset: 0 auto 0 0; width: min(320px, 90vw); max-width: 90vw; height: 100dvh; max-height: 100dvh; margin: 0; padding: 0; border: 0; background: var(--steel); color: #F7F6F3; }
+.drawer::backdrop { background: #101a35a8; backdrop-filter: blur(3px); }
+.drawer[open] { display: flex; animation: drawerIn .2s ease-out; }
+.drawerPanel { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: max(20px, env(safe-area-inset-top, 0px)) 16px max(24px, env(safe-area-inset-bottom, 0px)); }
+.drawerTop { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.drawerNav { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+.drawerNav .link { width: 100%; min-height: 44px; margin-block: 2px; }
+.drawerClose { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; color: inherit; }
+.drawerClose:hover { background: #ffffff20; }
+@keyframes drawerIn { from { transform: translateX(-100%); opacity: .6; } }
+
+.tabs { display: none; }
+
+/* Tablet and phone: every screen is in the drawer. */
+@media (max-width: 1023px) {
+  .menuBtn { display: inline-grid; margin-left: -10px; }
+  .bar { gap: var(--gap-tight); }
+}
+@media (max-width: 767px) {
+  .brandLogo { height: 34px; }
+  .product { display: none; }
+  .avatar { display: none; }
+  .content { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .page { padding-top: 30px; }
+  .tabs { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; z-index: var(--z-header); left: 0; right: 0; bottom: 0; padding: 8px 8px max(8px, env(safe-area-inset-bottom, 0px)); background: var(--paper); border-top: 1px solid #19254a20; }
+  .tabs .link { flex-direction: column; justify-content: center; gap: 5px; min-height: 54px; padding: 8px 2px; font-size: 11px; color: var(--text-muted); white-space: normal; text-align: center; }
+  .tabs .link:hover { background: var(--steel-08); color: var(--text); }
+  .tabs .link[aria-current="page"] { background: var(--steel); color: #fff; }
+  .tabs .link svg { width: 18px; height: 18px; }
+  .tabs .soon { display: none; }
+}
