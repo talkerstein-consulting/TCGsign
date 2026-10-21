@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent as RPointerEvent } from "react";
 import { useNavigate } from "react-router";
 import {
-  ArrowLeft, ArrowRight, CheckSquare, Download, FilePen, Redo2, RotateCcw, RotateCw, Square, Trash2, Undo2,
+  ArrowLeft, ArrowRight, CheckSquare, Download, FilePen, Redo2, RotateCcw, RotateCw, ShieldCheck, Square, Trash2, Undo2,
 } from "lucide-react";
 import { Alert, Badge, Button, IconButton, PageHeader, Toast } from "../../components/ui";
-import { DropZone, PageThumb, PrivacyNote, ThumbGrid } from "../../components/pdf";
+import { DropZone, PageThumb, ThumbGrid } from "../../components/pdf";
 import type { PDFDocumentProxy } from "pdfjs-dist/legacy/build/pdf.mjs";
 import type { Field } from "../../pdf/engine";
 import { formatSize } from "../../pdf/format";
@@ -272,7 +272,14 @@ export default function Organize() {
   return (
     <div className={s.organize}>
       <PageHeader eyebrow="Organize pages" title={doc.name.replace(/\.pdf$/i, "")}
-        description={<>{items.length} page{items.length === 1 ? "" : "s"}{deleted > 0 ? ` (${deleted} removed)` : ""} · original {formatSize(doc.size)} <PrivacyNote /></>}
+        description={
+          // One line, one font: each fact is its own item, spaced apart with a dot between.
+          <span className={s.metaLine}>
+            <span>{items.length} page{items.length === 1 ? "" : "s"}{deleted > 0 ? ` (${deleted} removed)` : ""}</span>
+            <span>original {formatSize(doc.size)}</span>
+            <span className={s.metaSafe}><ShieldCheck aria-hidden />Stays on this device</span>
+          </span>
+        }
         actions={<>
           <Button variant="secondary" icon={<FilePen aria-hidden />} busy={busy === "continue"} disabled={!items.length || !!busy} onClick={continueEditing}>Continue to Sign</Button>
           <Button icon={<Download aria-hidden />} busy={busy === "download"} disabled={!items.length || !!busy} onClick={download}>Download PDF</Button>

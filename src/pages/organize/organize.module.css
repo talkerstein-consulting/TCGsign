@@ -9,3 +9,9 @@
 @media (max-width: 560px) { .grid { padding: var(--gap-tight); } }
 
 .help { font-size: var(--fs-sm); color: var(--text-muted); max-width: 72ch; line-height: 1.55; }
+
+/* Header facts on one line, in the description's font: items spaced apart with a dot between. */
+.metaLine { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 0; }
+.metaLine > span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.metaLine > span + span::before { content: '\00B7'; margin: 0 12px; color: var(--text-faint); }
+.metaSafe svg { width: 15px; height: 15px; flex: none; color: var(--ok); }
